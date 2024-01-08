@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # tell nginx that is should expect regex in paths
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: wagerly.dev
+      http:
+        paths:
+          # any request to cluster with this /api/users/ANY should get routed to the backend:
+          - path: /api/users/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 9000
